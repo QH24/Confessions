@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confession App 2.0</title>
+    
+    <style>
+        body {
+            background-color: #0a0a0a; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #1e1e1e; /* Slightly lighter for the container */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #00d9d9; /* Cyan for headers */
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #333; /* Dark textarea background */
+            color: #e0e0e0; /* Light text in textarea */
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00d9d9; /* Cyan button */
+            border: none;
+            border-radius: 5px;
+            color: black; /* Black text for contrast */
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #00b0b0; /* Darker cyan on hover */
+        }
+
+        .posts {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .post {
+            background-color: #333; /* Post background */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            color: #e0e0e0;
+        }
+
+        .post p {
+            margin: 0;
+            word-wrap: break-word;
+        }
+    </style>
+
+    <script type="module">
+        // Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        // Firebase SDK configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCC1FLGLfDmY7_ehlYymD-trxq_BT3Lx80",
+            authDomain: "slhsconfessions-e3418.firebaseapp.com",
+            projectId: "slhsconfessions-e3418",
+            storageBucket: "slhsconfessions-e3418.appspot.com",
+            messagingSenderId: "351167606145",
+            appId: "1:351167606145:web:cf5e9978f98c5fb5620c80"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Wait until the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const postForm = document.getElementById('post-form');
+            const postContent = document.getElementById('post-content');
+            const postsContainer = document.getElementById('posts-container');
+
+            // Submit post to Firestore
+            postForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const content = postContent.value.trim();
+                if (content) {
+                    try {
+                        // Add a new post to Firestore
+                        await addDoc(collection(db, "posts"), {
+                            username: "Anonymous", // Static username for now
+                            content: content,
+                            timestamp: new Date()
+                        });
+                        postContent.value = ''; // Clear the textarea
+                        loadPosts(); // Reload posts after submitting
+                    } catch (error) {
+                        console.error("Error adding post: ", error);
+                    }
+                } else {
+                    alert("Please write something before posting!");
+                }
+            });
+
+            // Load posts from Firestore
+            const loadPosts = async () => {
+                postsContainer.innerHTML = ''; // Clear the posts container
+                const querySnapshot = await getDocs(collection(db, "posts"));
+                querySnapshot.forEach((doc) => {
+                    const post = document.createElement('div');
+                    post.classList.add('post');
+                    post.innerHTML = `<p><strong>${doc.data().username}</strong>: ${doc.data().content}</p>`;
+                    postsContainer.appendChild(post);
+                });
+            };
+
+            // Load posts on page load
+            loadPosts();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Confession App 2.0</h1>
+        <form id="post-form">
+            <textarea id="post-content" placeholder="What's on your mind?" required></textarea><br>
+            <button type="submit">Post</button>
+        </form>
+        <div class="posts" id="posts-container">
+            <!-- Posts will appear here -->
+        </div>
+    </div>
+</body>
+</html>
