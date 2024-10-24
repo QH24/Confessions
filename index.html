@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
         body {
             background-color: #1a1a1a; /* Dark background */
             color: #f5f5f5; /* Light text color for contrast */
-            font-family: Arial, sans-serif;
+            font-family: Arial, sans-serif; /* Change back to Arial */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -21,7 +21,8 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 400px;
+            width: 100%; /* Make it responsive */
+            max-width: 400px; /* Set a max width */
             text-align: center;
         }
 
@@ -130,7 +131,7 @@
                 querySnapshot.forEach((doc) => {
                     const post = document.createElement('div');
                     post.classList.add('post');
-                    post.innerHTML = <p><strong>${doc.data().username}</strong>: ${doc.data().content}</p>;
+                    post.innerHTML = `<p><strong>${doc.data().username}</strong>: ${doc.data().content}</p>`;
                     postsContainer.appendChild(post);
                 });
             };
@@ -152,4 +153,4 @@
         </div>
     </div>
 </body>
-</html> 
+</html>
